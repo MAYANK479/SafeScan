@@ -121,9 +121,15 @@ def get_scan_history():
 @app.get("/")
 def serve_web_ui():
     """Serves the interactive SafeScan AI frontend dashboard."""
-    index_file = os.path.join(WEB_DIR, "index.html")
-    if os.path.exists(index_file):
-        return FileResponse(index_file)
+    for candidate in [
+        os.path.join(WEB_DIR, "index.html"),
+        os.path.join(os.getcwd(), "public", "index.html"),
+        os.path.join(os.getcwd(), "web", "index.html"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "index.html"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "web", "index.html"),
+    ]:
+        if os.path.exists(candidate):
+            return FileResponse(candidate)
     return {
         "service": "SafeScan AI Threat Engine",
         "version": "2.0.0",

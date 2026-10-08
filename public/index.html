@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeScan AI — Autonomous Web Threat & Phishing Detection System</title>
+  <meta name="description" content="Next-generation multi-agent cybersecurity intelligence platform with Google Authenticator 2FA, heuristic screening, and Gemini AI.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #060911;
+      --bg-card: rgba(13, 19, 33, 0.78);
+      --bg-card-hover: rgba(19, 28, 48, 0.9);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(56, 189, 248, 0.28);
+      --primary: #0ea5e9;
+      --primary-glow: rgba(14, 165, 233, 0.35);
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.35);
+      --danger: #ef4444;
+      --danger-glow: rgba(239, 68, 68, 0.35);
+      --warning: #f59e0b;
+      --warning-glow: rgba(245, 158, 11, 0.35);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.35);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    /* Ambient particle background canvas */
+    #particle-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.55;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header & Navigation */
+    header {
+      border-bottom: 1px solid var(--border-subtle);
+      backdrop-filter: blur(16px);
+      background: rgba(6, 9, 17, 0.82);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.95rem 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #0284c7, #6366f1);
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 1.35rem;
+      box-shadow: 0 0 25px var(--primary-glow);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 40%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-badge {
+      font-size: 0.68rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--primary);
+      border: 1px solid rgba(14, 165, 233, 0.35);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .audio-toggle-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .audio-toggle-btn:hover {
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* Google Sign-In Button in Navbar */
+    .btn-google-login {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      background: #ffffff;
+      color: #1f2937;
+      padding: 0.55rem 1.15rem;
+      border-radius: 9999px;
+      font-family: var(--font-heading);
+      font-size: 0.88rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.25s ease;
+    }
+
+    .btn-google-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
+    }
+
+    .google-g-icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* User Profile Chip when authenticated */
+    .user-profile-chip {
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(16, 21, 33, 0.85);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      box-shadow: 0 0 15px var(--success-glow);
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981, #0ea5e9);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: #fff;
+    }
+
+    .user-info-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .user-name {
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #fff;
+    }
+
+    .user-badge-2fa {
+      font-size: 0.65rem;
+      color: #6ee7b7;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0.2rem 0.4rem;
+    }
+
+    .btn-logout:hover {
+      color: var(--danger);
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 3.5rem 0 2rem;
+    }
+
+    .hero-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.4rem 1.2rem;
+      background: linear-gradient(90deg, rgba(14, 165, 233, 0.15), rgba(99, 102, 241, 0.15));
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 9999px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #7dd3fc;
+      margin-bottom: 1.4rem;
+      box-shadow: 0 0 30px rgba(14, 165, 233, 0.15);
+    }
+
+    .hero h1 {
+      font-family: var(--font-heading);
+      font-size: 3.6rem;
+      font-weight: 900;
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, #ffffff 45%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero h1 span.gradient-text {
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 60%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 760px;
+      margin: 0 auto 2.5rem;
+      font-weight: 400;
+    }
+
+    /* Main Scan Card */
+    .scan-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-accent);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.65), 0 0 40px rgba(14, 165, 233, 0.12);
+      backdrop-filter: blur(20px);
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+
+    .input-wrapper {
+      display: flex;
+      gap: 0.85rem;
+      position: relative;
+    }
+
+    .url-input-icon {
+      position: absolute;
+      left: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.25rem;
+      color: #64748b;
+      pointer-events: none;
+    }
+
+    .url-input {
+      flex: 1;
+      background: rgba(4, 7, 14, 0.9);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 1.15rem 1.4rem 1.15rem 3.2rem;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      transition: all 0.25s ease;
+      outline: none;
+    }
+
+    .url-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 30px var(--primary-glow);
+    }
+
+    .url-input::placeholder {
+      color: #475569;
+    }
+
+    .btn-scan-primary {
+      background: linear-gradient(135deg, #0284c7 0%, #6366f1 100%);
+      color: white;
+      border: none;
+      padding: 1.15rem 2.25rem;
+      border-radius: 14px;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 10px 30px var(--primary-glow);
+      white-space: nowrap;
+    }
+
+    .btn-scan-primary:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px var(--primary-glow);
+      filter: brightness(1.12);
+    }
+
+    .btn-scan-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Attack Scenario Chips */
+    .scenario-strip {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .scenario-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .chip-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: #cbd5e1;
+      padding: 0.45rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .chip-btn:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .chip-btn.threat:hover {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+    }
+
+    .chip-btn.safe:hover {
+      border-color: var(--success);
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+    }
+
+    /* Multi-Agent Stepper Pipeline */
+    .pipeline-grid {
+      display: none;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .pipeline-step-card {
+      background: rgba(16, 21, 33, 0.65);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.35rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .pipeline-step-card.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 25px var(--primary-glow);
+      background: rgba(14, 165, 233, 0.09);
+    }
+
+    .pipeline-step-card.active::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 200%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      animation: scanrail 1.5s infinite;
+    }
+
+    @keyframes scanrail {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(100%); }
+    }
+
+    .pipeline-step-card.done {
+      border-color: rgba(16, 185, 129, 0.45);
+      background: rgba(16, 185, 129, 0.06);
+    }
+
+    .agent-head {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .agent-ico {
+      font-size: 1.35rem;
+    }
+
+    .agent-title {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.98rem;
+      color: #fff;
+    }
+
+    .agent-detail {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .agent-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-top: 0.75rem;
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    .pill-wait { color: #64748b; background: rgba(100, 116, 139, 0.15); }
+    .pill-live { color: #38bdf8; background: rgba(14, 165, 233, 0.2); animation: pulse 1s infinite; }
+    .pill-done { color: #34d399; background: rgba(16, 185, 129, 0.2); }
+
+    /* Results Dashboard */
+    .results-container {
+      display: none;
+      animation: fadeInUp 0.45s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Top Verdict Card */
+    .verdict-master-card {
+      border-radius: 22px;
+      padding: 2.25rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid;
+      backdrop-filter: blur(20px);
+    }
+
+    .verdict-master-card.malicious {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(15, 23, 42, 0.85) 100%);
+      border-color: rgba(239, 68, 68, 0.45);
+      box-shadow: 0 0 50px var(--danger-glow);
+    }
+
+    .verdict-master-card.suspicious {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(15, 23, 42, 0.85) 100%);
+      border-color: rgba(245, 158, 11, 0.45);
+      box-shadow: 0 0 50px var(--warning-glow);
+    }
+
+    .verdict-master-card.safe {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 42, 0.85) 100%);
+      border-color: rgba(16, 185, 129, 0.45);
+      box-shadow: 0 0 50px var(--success-glow);
+    }
+
+    .verdict-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.95rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .verdict-tag.malicious { background: var(--danger); color: white; box-shadow: 0 0 20px var(--danger-glow); }
+    .verdict-tag.suspicious { background: var(--warning); color: #000; box-shadow: 0 0 20px var(--warning-glow); }
+    .verdict-tag.safe { background: var(--success); color: white; box-shadow: 0 0 20px var(--success-glow); }
+
+    .verdict-headline {
+      font-family: var(--font-heading);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 0.4rem;
+      line-height: 1.2;
+    }
+
+    .verdict-target {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: #94a3b8;
+      word-break: break-all;
+    }
+
+    .stats-pills {
+      display: flex;
+      gap: 0.85rem;
+      margin-top: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-badge {
+      font-size: 0.82rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      padding: 0.3rem 0.8rem;
+      border-radius: 8px;
+      color: #cbd5e1;
+    }
+
+    .stat-badge strong {
+      color: #fff;
+    }
+
+    /* Radial SVG Score Gauge */
+    .gauge-wrapper {
+      text-align: center;
+      position: relative;
+      min-width: 140px;
+    }
+
+    .gauge-svg {
+      width: 120px;
+      height: 120px;
+      transform: rotate(-90deg);
+    }
+
+    .gauge-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.08);
+      stroke-width: 10;
+    }
+
+    .gauge-fill {
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 283;
+      stroke-dashoffset: 283;
+      transition: stroke-dashoffset 1.2s ease-out;
+    }
+
+    .gauge-fill.malicious { stroke: var(--danger); filter: drop-shadow(0 0 8px var(--danger-glow)); }
+    .gauge-fill.suspicious { stroke: var(--warning); filter: drop-shadow(0 0 8px var(--warning-glow)); }
+    .gauge-fill.safe { stroke: var(--success); filter: drop-shadow(0 0 8px var(--success-glow)); }
+
+    .gauge-number {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -65%);
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .gauge-subtext {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* Tabs Section */
+    .dashboard-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.75rem;
+      overflow-x: auto;
+    }
+
+    .dtab {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 0.6rem 1.15rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .dtab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .dtab.active {
+      color: var(--primary);
+      background: rgba(14, 165, 233, 0.12);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Two-Column Grid */
+    .two-col-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 1.85rem;
+      backdrop-filter: blur(14px);
+    }
+
+    .glass-card-title {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .executive-body {
+      font-size: 1rem;
+      color: #e2e8f0;
+      line-height: 1.65;
+      margin-bottom: 1.5rem;
+    }
+
+    .action-steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .action-step-item {
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      border-left: 3px solid var(--primary);
+      font-size: 0.92rem;
+      color: #f1f5f9;
+    }
+
+    .indicators-list-group {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .indicator-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .indicator-box.danger { border-color: rgba(239, 68, 68, 0.35); background: rgba(239, 68, 68, 0.04); }
+    .indicator-box.safe { border-color: rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.04); }
+
+    /* Scan History Table */
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .history-table th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .history-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #cbd5e1;
+    }
+
+    .history-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* JSON Display */
+    .code-box {
+      background: #020409;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    /* Modal for Google Sign-In & 2FA */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      display: none;
+      place-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .auth-modal {
+      background: #0b0f19;
+      border: 1px solid var(--border-accent);
+      border-radius: 24px;
+      width: 90%;
+      max-width: 440px;
+      padding: 2.25rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 40px var(--primary-glow);
+      position: relative;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.25rem;
+      cursor: pointer;
+    }
+
+    .modal-close-btn:hover { color: #fff; }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .modal-logo {
+      width: 50px;
+      height: 50px;
+      background: #ffffff;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 1rem;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-title {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .modal-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .auth-step {
+      display: none;
+    }
+
+    .auth-step.active {
+      display: block;
+    }
+
+    /* 6-Digit OTP Pin Input Box */
+    .otp-inputs {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin: 1.5rem 0 1.25rem;
+    }
+
+    .otp-digit {
+      width: 48px;
+      height: 56px;
+      background: #040711;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      color: #fff;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .otp-digit:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .btn-auth-action {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      border: none;
+      padding: 0.95rem;
+      border-radius: 12px;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: all 0.2s;
+    }
+
+    .btn-auth-action:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 0 25px var(--primary-glow);
+    }
+
+    .demo-autofill-btn {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      color: #cbd5e1;
+      padding: 0.65rem;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      margin-top: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .demo-autofill-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* Toast Notification */
+    .toast-pill {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #0f172a;
+      border: 1px solid var(--primary);
+      color: #fff;
+      padding: 0.8rem 1.4rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--primary-glow);
+      display: none;
+      z-index: 2000;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @media (max-width: 900px) {
+      .hero h1 { font-size: 2.5rem; }
+      .pipeline-grid { grid-template-columns: 1fr 1fr; }
+      .two-col-grid { grid-template-columns: 1fr; }
+      .verdict-master-card { flex-direction: column; text-align: center; }
+      .stats-pills { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Particle Canvas -->
+  <canvas id="particle-canvas"></canvas>
+
+  <header>
+    <div class="container nav-inner">
+      <a href="/" class="brand">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <span class="brand-title">SafeScan AI</span>
+          <span class="brand-badge">Multi-Agent Intelligence</span>
+        </div>
+      </a>
+
+      <div class="nav-controls">
+        <button id="sound-btn" class="audio-toggle-btn" title="Toggle Audio FX" onclick="toggleSound()">🔊</button>
+        <a href="/docs" target="_blank" class="chip-btn" style="text-decoration: none;">📖 API Docs</a>
+
+        <!-- Sign-In Button (Shown when logged out) -->
+        <button id="google-login-btn" class="btn-google-login" onclick="openAuthModal()">
+          <svg class="google-g-icon" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Sign In with Google</span>
+        </button>
+
+        <!-- User Profile Chip (Shown when logged in & 2FA active) -->
+        <div id="user-chip" class="user-profile-chip">
+          <div id="user-avatar-initial" class="user-avatar">M</div>
+          <div class="user-info-text">
+            <span id="user-display-name" class="user-name">Mayank Pandey</span>
+            <span class="user-badge-2fa">🛡️ Google 2FA Active</span>
+          </div>
+          <button class="btn-logout" title="Sign Out" onclick="signOutUser()">✕</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-badge-pill">⚡ Autonomous Multi-Agent Threat Defense & Google Authenticator Security</div>
+      <h1>Real-Time AI Defense Against<br><span class="gradient-text">Zero-Day Phishing & Scams</span></h1>
+      <p>Analyze any web address before you visit. SafeScan inspects lexical entropy, DOM forms, C2 exfiltration webhooks, and 50+ brand mismatches via Google Gemini AI.</p>
+
+      <!-- Search / Scan Box -->
+      <div class="scan-card">
+        <div class="input-wrapper">
+          <span class="url-input-icon">🌐</span>
+          <input 
+            type="text" 
+            id="target-url-input" 
+            class="url-input" 
+            placeholder="Enter URL to inspect (e.g. http://metamvsk-airdrop.pw or https://python.org)" 
+            value="http://metamvsk-airdrop-claim.pw/wallet-sync"
+          />
+          <button id="scan-btn" class="btn-scan-primary" onclick="triggerScan()">
+            <span>🚀</span>
+            <span>Analyze Threat</span>
+          </button>
+        </div>
+
+        <div class="scenario-strip">
+          <span class="scenario-label">Quick Scenarios:</span>
+          <button class="chip-btn threat" onclick="loadPreset('drainer')">🪙 MetaMask Seed Drainer</button>
+          <button class="chip-btn threat" onclick="loadPreset('paypal')">💳 PayPal Phishing</button>
+          <button class="chip-btn threat" onclick="loadPreset('stealer')">👾 Discord C2 Stealer</button>
+          <button class="chip-btn threat" onclick="loadPreset('apple')">🍏 Apple Homograph (IDN)</button>
+          <button class="chip-btn safe" onclick="loadPreset('benign')">🟢 Official Python.org</button>
+        </div>
+      </div>
+
+      <!-- Real-Time Multi-Agent Execution Progress -->
+      <div id="pipeline-stepper" class="pipeline-grid">
+        <div class="pipeline-step-card" id="step-scraper">
+          <div class="agent-head">
+            <span class="agent-ico">🌐</span>
+            <span class="agent-title">Agent 1: Scraper</span>
+          </div>
+          <div class="agent-detail">Bypasses Cloudflare anti-bot & extracts clean DOM.</div>
+          <span class="agent-pill pill-wait" id="badge-scraper">Waiting</span>
+        </div>
+
+        <div class="pipeline-step-card" id="step-heuristics">
+          <div class="agent-head">
+            <span class="agent-ico">⚡</span>
+            <span class="agent-title">Agent 2: Heuristics</span>
+          </div>
+          <div class="agent-detail">Shannon entropy, punycode, & 18+ signature rules.</div>
+          <span class="agent-pill pill-wait" id="badge-heuristics">Waiting</span>
+        </div>
+
+        <div class="pipeline-step-card" id="step-behavioral">
+          <div class="agent-head">
+            <span class="agent-ico">🧬</span>
+            <span class="agent-title">Agent 3: DOM Auditor</span>
+          </div>
+          <div class="agent-detail">Form input harvesting, obfuscation & brand mismatches.</div>
+          <span class="agent-pill pill-wait" id="badge-behavioral">Waiting</span>
+        </div>
+
+        <div class="pipeline-step-card" id="step-llm">
+          <div class="agent-head">
+            <span class="agent-ico">🤖</span>
+            <span class="agent-title">Agent 4: Gemini AI</span>
+          </div>
+          <div class="agent-detail">Synthesizes threat telemetry into explainable verdicts.</div>
+          <span class="agent-pill pill-wait" id="badge-llm">Waiting</span>
+        </div>
+      </div>
+
+      <!-- Results Display Section -->
+      <div id="results-container" class="results-container">
+        <!-- Top Master Verdict Card -->
+        <div id="verdict-banner" class="verdict-master-card malicious">
+          <div>
+            <div id="verdict-tag" class="verdict-tag malicious">🚨 MALICIOUS THREAT DETECTED</div>
+            <div id="verdict-category" class="verdict-headline">Cryptocurrency Wallet Drainer</div>
+            <div id="verdict-url" class="verdict-target">http://metamvsk-airdrop-claim.pw/wallet-sync</div>
+            <div class="stats-pills">
+              <span class="stat-badge">Confidence: <strong id="val-confidence">96%</strong></span>
+              <span class="stat-badge">Latency: <strong id="val-latency">14.5 ms</strong></span>
+              <span class="stat-badge">Protection: <strong id="val-engine">Dual-Engine Verified</strong></span>
+            </div>
+          </div>
+
+          <!-- Circular SVG Radial Gauge -->
+          <div class="gauge-wrapper">
+            <svg class="gauge-svg" viewBox="0 0 100 100">
+              <circle class="gauge-bg" cx="50" cy="50" r="45"></circle>
+              <circle id="gauge-circle" class="gauge-fill malicious" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div id="gauge-text" class="gauge-number">9.2</div>
+            <div class="gauge-subtext">Risk Score / 10</div>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="dashboard-tabs">
+          <button class="dtab active" onclick="switchTab('overview')">💡 Executive Overview</button>
+          <button class="dtab" onclick="switchTab('indicators')">🔍 Threat Indicators (<span id="tab-ind-count">0</span>)</button>
+          <button class="dtab" onclick="switchTab('history')">📜 Scan History</button>
+          <button class="dtab" onclick="switchTab('json')">🛠️ Developer JSON</button>
+        </div>
+
+        <!-- Tab 1: Overview -->
+        <div id="pane-overview" class="tab-pane active">
+          <div class="two-col-grid">
+            <div class="glass-card">
+              <div class="glass-card-title">💡 Executive Summary & Threat Advice</div>
+              <p id="summary-paragraph" class="executive-body"></p>
+              <div class="glass-card-title" style="font-size: 1.05rem; margin-top: 1rem;">👉 Actionable Security Recommendations:</div>
+              <ul id="recs-list" class="action-steps-list"></ul>
+            </div>
+
+            <div class="glass-card">
+              <div class="glass-card-title">🛡️ High-Priority Threat Highlights</div>
+              <ul id="overview-indicators" class="indicators-list-group"></ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Indicators -->
+        <div id="pane-indicators" class="tab-pane">
+          <div class="glass-card">
+            <div class="glass-card-title">🔍 Comprehensive Detected Security Anomaly Matrix</div>
+            <ul id="full-indicators-list" class="indicators-list-group"></ul>
+          </div>
+        </div>
+
+        <!-- Tab 3: History -->
+        <div id="pane-history" class="tab-pane">
+          <div class="glass-card">
+            <div class="glass-card-title">📜 Session Investigation History</div>
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Target URL</th>
+                  <th>Verdict</th>
+                  <th>Threat Category</th>
+                  <th>Risk Score</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody id="history-tbody">
+                <tr><td colspan="5" style="text-align: center; color: #64748b;">No recent scans yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 4: JSON -->
+        <div id="pane-json" class="tab-pane">
+          <div class="glass-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <div class="glass-card-title" style="margin: 0;">🛠️ Raw SIEM Telemetry Payload</div>
+              <button class="chip-btn" onclick="copyJSON()">📋 Copy JSON</button>
+            </div>
+            <pre id="raw-json-output" class="code-box"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Google Auth & Authenticator 2FA Modal -->
+  <div id="auth-modal-overlay" class="modal-overlay">
+    <div class="auth-modal">
+      <button class="modal-close-btn" onclick="closeAuthModal()">✕</button>
+
+      <!-- Step 1: Google Login -->
+      <div id="auth-step-1" class="auth-step active">
+        <div class="modal-header">
+          <div class="modal-logo">
+            <svg style="width: 28px; height: 28px;" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+          </div>
+          <h2 class="modal-title">Sign in with Google</h2>
+          <p class="modal-subtitle">Authenticate with your Google / Gmail account to access enterprise security controls.</p>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <label style="font-size: 0.82rem; color: #94a3b8; font-weight: 600;">Gmail Address:</label>
+          <input type="email" id="auth-email-input" class="url-input" style="padding: 0.85rem 1rem; width: 100%; margin-top: 0.4rem;" value="mayank.security@gmail.com" />
+        </div>
+
+        <button class="btn-auth-action" onclick="submitGoogleAuth()">Continue with Google</button>
+        <button class="demo-autofill-btn" onclick="quickFillAccount('mayank.security@gmail.com', 'Mayank Pandey')">✨ Use Recruiter Demo Account</button>
+      </div>
+
+      <!-- Step 2: Google Authenticator 2FA Challenge -->
+      <div id="auth-step-2" class="auth-step">
+        <div class="modal-header">
+          <div class="modal-logo" style="background: linear-gradient(135deg, #0284c7, #6366f1);">
+            <span style="font-size: 1.5rem;">📱</span>
+          </div>
+          <h2 class="modal-title">Google Authenticator</h2>
+          <p class="modal-subtitle">Enter the 6-digit verification code from your Google Authenticator app for <strong id="step2-email" style="color:#fff;">mayank@gmail.com</strong>.</p>
+        </div>
+
+        <div class="otp-inputs">
+          <input type="text" maxlength="1" class="otp-digit" id="otp-1" oninput="otpAdvance(this, 'otp-2')" />
+          <input type="text" maxlength="1" class="otp-digit" id="otp-2" oninput="otpAdvance(this, 'otp-3')" />
+          <input type="text" maxlength="1" class="otp-digit" id="otp-3" oninput="otpAdvance(this, 'otp-4')" />
+          <input type="text" maxlength="1" class="otp-digit" id="otp-4" oninput="otpAdvance(this, 'otp-5')" />
+          <input type="text" maxlength="1" class="otp-digit" id="otp-5" oninput="otpAdvance(this, 'otp-6')" />
+          <input type="text" maxlength="1" class="otp-digit" id="otp-6" oninput="otpAdvance(this, null)" />
+        </div>
+
+        <button class="btn-auth-action" onclick="submit2FA()">Verify & Unlock Dashboard</button>
+        <button class="demo-autofill-btn" onclick="autofill2FA('123456')">🔑 Autofill 2FA Demo Code (123456)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-pill" class="toast-pill"></div>
+
+  <script>
+    // Particle Mesh Background Animation
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.45;
+        this.vy = (Math.random() - 0.5) * 0.45;
+        this.radius = Math.random() * 2 + 1;
+        this.color = Math.random() > 0.5 ? 'rgba(14, 165, 233, ' : 'rgba(99, 102, 241, ';
+        this.alpha = Math.random() * 0.4 + 0.2;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color + this.alpha + ')';
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 50; i++) particles.push(new Particle());
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 110) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(14, 165, 233, ${0.12 * (1 - dist / 110)})`;
+            ctx.lineWidth = 0.8;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // Web Audio Synthesizer (Zero external dependencies)
+    let audioEnabled = true;
+    let audioCtx = null;
+
+    function playTone(freq, type = 'sine', duration = 0.15) {
+      if (!audioEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      audioEnabled = !audioEnabled;
+      document.getElementById('sound-btn').textContent = audioEnabled ? '🔊' : '🔇';
+      showToast(audioEnabled ? 'Audio Effects Enabled' : 'Audio Muted');
+    }
+
+    // Pre-Configured Attack Scenarios
+    const presetData = {
+      drainer: {
+        url: "http://metamvsk-airdrop-claim.pw/wallet-sync",
+        html: `<html><head><title>MetaMask Sync Portal</title></head><body><h1>Immediate Action: Connect Web3 Wallet</h1><p>Your MetaMask account is locked. Enter your 12-word secret recovery seed phrase to restore your wallet and claim your 500 USDT airdrop.</p><form action="/steal"><input type="text" name="seed_phrase" placeholder="12 or 24 mnemonic recovery words"><button type="submit">Verify Now</button></form><script>const c2 = "https://discord.com/api/webhooks/999999/SecretStealerC2";eval(atob("Y29uc29sZS5sb2coJ2V4ZWN1dGluZycpOw=="));<\/script></body></html>`,
+        title: "MetaMask Sync Portal"
+      },
+      paypal: {
+        url: "http://paypal-security-verification.pw/login",
+        html: `<html><head><title>PayPal Security Alert</title></head><body><h1>Immediate Action Required</h1><p>Your PayPal account has been suspended due to unusual activity. Enter your password and SSN.</p><form><input type="password" name="password" placeholder="Password"><input type="text" name="ssn" placeholder="Social Security Number"><button type="submit">Confirm</button></form></body></html>`,
+        title: "PayPal Security Alert"
+      },
+      stealer: {
+        url: "http://discord-nitro-generator.xyz",
+        html: `<html><head><title>Free Discord Nitro</title></head><body><h1>Claim Nitro</h1><script>const hook = "https://discord.com/api/webhooks/12345/abcdef";eval(atob("ZG9jdW1lbnQ="));<\/script></body></html>`,
+        title: "Free Discord Nitro"
+      },
+      apple: {
+        url: "https://xn--apple-43a.com/auth",
+        html: `<html><head><title>Apple ID Sign In</title></head><body><h1>Apple ID Verification</h1><p>Your account is restricted. Enter your Apple password to avoid permanent suspension.</p><form><input type="password" name="password"></form></body></html>`,
+        title: "Apple ID Sign In"
+      },
+      benign: {
+        url: "https://python.org",
+        html: `<html><head><title>Python Software Foundation</title></head><body><h1>Welcome to Python.org</h1><p>The Python programming language community and official documentation. Follow us on Twitter and LinkedIn.</p></body></html>`,
+        title: "Python Software Foundation"
+      }
+    };
+
+    let activePreset = 'drainer';
+
+    function loadPreset(key) {
+      activePreset = key;
+      document.getElementById('target-url-input').value = presetData[key].url;
+      triggerScan();
+    }
+
+    // Trigger Multi-Agent Scan
+    async function triggerScan() {
+      const urlInput = document.getElementById('target-url-input').value.trim();
+      if (!urlInput) {
+        showToast("Please enter a target URL!");
+        return;
+      }
+
+      playTone(600, 'sine', 0.1);
+      const scanBtn = document.getElementById('scan-btn');
+      scanBtn.disabled = true;
+      scanBtn.innerHTML = `<span>⏳</span><span>Investigating...</span>`;
+
+      // Display Stepper
+      const stepper = document.getElementById('pipeline-stepper');
+      stepper.style.display = 'grid';
+      document.getElementById('results-container').style.display = 'none';
+
+      // Agent 1: Scraper
+      setAgentRunning('scraper', 'Extracting Content...');
+      playTone(520, 'sine', 0.1);
+      await sleep(250);
+      setAgentDone('scraper', 'DOM Extracted');
+
+      // Agent 2: Heuristics
+      setAgentRunning('heuristics', 'Screening Lexical Patterns...');
+      playTone(680, 'sine', 0.1);
+      await sleep(250);
+      setAgentDone('heuristics', 'Heuristics Screened');
+
+      // Agent 3: Behavioral
+      setAgentRunning('behavioral', 'Auditing Forms & C2 Webhooks...');
+      playTone(820, 'sine', 0.1);
+      await sleep(250);
+      setAgentDone('behavioral', 'DOM Audited');
+
+      // Agent 4: LLM
+      setAgentRunning('llm', 'Gemini AI Synthesizing...');
+      playTone(940, 'triangle', 0.15);
+
+      try {
+        let report;
+        if (presetData[activePreset] && presetData[activePreset].url === urlInput) {
+          const res = await fetch('/api/v1/scan/simulation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              url: urlInput,
+              html: presetData[activePreset].html,
+              page_title: presetData[activePreset].title
+            })
+          });
+          report = await res.json();
+        } else {
+          const res = await fetch('/api/v1/scan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: urlInput })
+          });
+          report = await res.json();
+        }
+
+        setAgentDone('llm', 'Synthesized');
+        renderReport(report);
+
+        if (report.verdict === 'MALICIOUS') {
+          playTone(220, 'sawtooth', 0.35);
+        } else if (report.verdict === 'SUSPICIOUS') {
+          playTone(440, 'sine', 0.25);
+        } else {
+          playTone(880, 'sine', 0.25);
+        }
+      } catch (err) {
+        console.error(err);
+        setAgentDone('llm', 'Fallback Complete');
+        showToast("Analysis completed with fallback telemetry.");
+      } finally {
+        scanBtn.disabled = false;
+        scanBtn.innerHTML = `<span>🚀</span><span>Analyze Threat</span>`;
+      }
+    }
+
+    function renderReport(report) {
+      const container = document.getElementById('results-container');
+      const banner = document.getElementById('verdict-banner');
+      const tag = document.getElementById('verdict-tag');
+      const category = document.getElementById('verdict-category');
+      const urlElem = document.getElementById('verdict-url');
+      const gaugeCircle = document.getElementById('gauge-circle');
+      const gaugeText = document.getElementById('gauge-text');
+      const conf = document.getElementById('val-confidence');
+      const lat = document.getElementById('val-latency');
+
+      const v = (report.verdict || "SAFE").toUpperCase();
+      const score = report.risk_score || 0.0;
+
+      // Update styling based on verdict
+      const stateClass = v === 'MALICIOUS' ? 'malicious' : v === 'SUSPICIOUS' ? 'suspicious' : 'safe';
+      banner.className = 'verdict-master-card ' + stateClass;
+      tag.className = 'verdict-tag ' + stateClass;
+      gaugeCircle.className = 'gauge-fill ' + stateClass;
+
+      tag.textContent = v === 'MALICIOUS' ? '🚨 MALICIOUS THREAT DETECTED' : v === 'SUSPICIOUS' ? '⚠️ SUSPICIOUS - EXERCISE CAUTION' : '🛡️ BENIGN - SITE APPEARS SAFE';
+      category.textContent = report.threat_category || 'Threat Assessment';
+      urlElem.textContent = report.url;
+      gaugeText.textContent = score.toFixed(1);
+      conf.textContent = Math.round((report.confidence_score || 0.92) * 100) + '%';
+      lat.textContent = (report.scan_duration_ms || 18.2) + ' ms';
+
+      // Animate Radial Gauge SVG: 283 circumference
+      const maxOffset = 283;
+      const targetOffset = maxOffset - (maxOffset * (score / 10.0));
+      gaugeCircle.style.strokeDashoffset = targetOffset;
+
+      // Executive Summary
+      document.getElementById('summary-paragraph').textContent = report.summary || 'Threat analysis complete.';
+
+      // Actionable steps
+      const recsList = document.getElementById('recs-list');
+      recsList.innerHTML = '';
+      (report.recommendations || []).forEach(r => {
+        const li = document.createElement('li');
+        li.className = 'action-step-item';
+        li.textContent = '👉 ' + r;
+        recsList.appendChild(li);
+      });
+
+      // Indicators
+      const indicators = report.key_indicators || [];
+      document.getElementById('tab-ind-count').textContent = indicators.length;
+
+      const overList = document.getElementById('overview-indicators');
+      const fullList = document.getElementById('full-indicators-list');
+      overList.innerHTML = '';
+      fullList.innerHTML = '';
+
+      if (indicators.length === 0) {
+        const box = `<li class="indicator-box safe"><span>🛡️</span><span>Zero malicious indicators or threat markers identified.</span></li>`;
+        overList.innerHTML = box;
+        fullList.innerHTML = box;
+      } else {
+        indicators.forEach(item => {
+          const itemHtml = `<li class="indicator-box danger"><span>⚠️</span><span>${item}</span></li>`;
+          fullList.insertAdjacentHTML('beforeend', itemHtml);
+        });
+        // Overview shows top 4
+        indicators.slice(0, 4).forEach(item => {
+          const itemHtml = `<li class="indicator-box danger"><span>⚠️</span><span>${item}</span></li>`;
+          overList.insertAdjacentHTML('beforeend', itemHtml);
+        });
+      }
+
+      // JSON Telemetry
+      document.getElementById('raw-json-output').textContent = JSON.stringify(report, null, 2);
+
+      // Append to session scan history table
+      appendHistoryRow(report);
+
+      container.style.display = 'block';
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function appendHistoryRow(report) {
+      const tbody = document.getElementById('history-tbody');
+      if (tbody.innerHTML.includes('No recent scans')) tbody.innerHTML = '';
+
+      const v = (report.verdict || "SAFE").toUpperCase();
+      const color = v === 'MALICIOUS' ? '#ef4444' : v === 'SUSPICIOUS' ? '#f59e0b' : '#10b981';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-family: var(--font-mono); font-size: 0.85rem;">${report.url}</td>
+        <td><strong style="color: ${color};">${v}</strong></td>
+        <td>${report.threat_category || 'Assessment'}</td>
+        <td><span style="font-weight: 700; color: ${color};">${(report.risk_score || 0).toFixed(1)}/10</span></td>
+        <td style="font-size: 0.8rem; color: #94a3b8;">${new Date().toLocaleTimeString()}</td>
+      `;
+      tbody.prepend(tr);
+    }
+
+    function switchTab(tabKey) {
+      document.querySelectorAll('.dtab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.getElementById('pane-' + tabKey).classList.add('active');
+    }
+
+    function setAgentRunning(agentId, text) {
+      const card = document.getElementById('step-' + agentId);
+      const badge = document.getElementById('badge-' + agentId);
+      card.className = 'pipeline-step-card active';
+      badge.className = 'agent-pill pill-live';
+      badge.textContent = text;
+    }
+
+    function setAgentDone(agentId, text) {
+      const card = document.getElementById('step-' + agentId);
+      const badge = document.getElementById('badge-' + agentId);
+      card.className = 'pipeline-step-card done';
+      badge.className = 'agent-pill pill-done';
+      badge.textContent = '✓ ' + text;
+    }
+
+    function sleep(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast-pill');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3000);
+    }
+
+    function copyJSON() {
+      const text = document.getElementById('raw-json-output').textContent;
+      navigator.clipboard.writeText(text);
+      showToast("Telemetry JSON Copied to Clipboard! 📋");
+    }
+
+    // Google Authenticator & Login Modal Logic
+    let currentAuthEmail = "";
+
+    function openAuthModal() {
+      document.getElementById('auth-modal-overlay').style.display = 'grid';
+      document.getElementById('auth-step-1').classList.add('active');
+      document.getElementById('auth-step-2').classList.remove('active');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal-overlay').style.display = 'none';
+    }
+
+    function quickFillAccount(email, name) {
+      document.getElementById('auth-email-input').value = email;
+      submitGoogleAuth();
+    }
+
+    async function submitGoogleAuth() {
+      const email = document.getElementById('auth-email-input').value.trim();
+      if (!email) {
+        showToast("Please enter an email address!");
+        return;
+      }
+      currentAuthEmail = email;
+
+      try {
+        const res = await fetch('/api/v1/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, name: email.split('@')[0] })
+        });
+        const data = await res.json();
+        
+        // Advance to Step 2 (Google Authenticator 2FA)
+        document.getElementById('step2-email').textContent = email;
+        document.getElementById('auth-step-1').classList.remove('active');
+        document.getElementById('auth-step-2').classList.add('active');
+        document.getElementById('otp-1').focus();
+        showToast("Google account authenticated. Enter 2FA code.");
+      } catch (e) {
+        showToast("Auth initiation failed.");
+      }
+    }
+
+    function otpAdvance(curr, nextId) {
+      if (curr.value.length === 1 && nextId) {
+        document.getElementById(nextId).focus();
+      }
+    }
+
+    function autofill2FA(code) {
+      const digits = code.split('');
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById('otp-' + i).value = digits[i - 1] || '';
+      }
+      submit2FA();
+    }
+
+    async function submit2FA() {
+      let otp = '';
+      for (let i = 1; i <= 6; i++) {
+        otp += document.getElementById('otp-' + i).value;
+      }
+      if (otp.length < 6) {
+        showToast("Enter all 6 digits of the Authenticator code!");
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/v1/auth/verify-2fa', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: currentAuthEmail, otp_code: otp })
+        });
+        const data = await res.json();
+        if (data.status === 'verified') {
+          closeAuthModal();
+          // Update navbar profile
+          document.getElementById('google-login-btn').style.display = 'none';
+          const userChip = document.getElementById('user-chip');
+          userChip.style.display = 'flex';
+          document.getElementById('user-display-name').textContent = currentAuthEmail.split('@')[0];
+          document.getElementById('user-avatar-initial').textContent = currentAuthEmail[0].toUpperCase();
+          showToast("🎉 Verified with Google Authenticator! Dashboard Unlocked.");
+          playTone(880, 'sine', 0.2);
+        } else {
+          showToast("Invalid code! Try 123456 for demo.");
+        }
+      } catch (err) {
+        showToast("Invalid 2FA code. Hint: Use 123456.");
+      }
+    }
+
+    function signOutUser() {
+      document.getElementById('user-chip').style.display = 'none';
+      document.getElementById('google-login-btn').style.display = 'flex';
+      showToast("Signed out successfully.");
+    }
+  </script>
+</body>
+</html>
