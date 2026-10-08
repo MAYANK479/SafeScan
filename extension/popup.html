@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SafeScan AI Security Guard</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <div class="popup-header">
+      <div class="header-brand">
+        <div class="header-icon">🛡️</div>
+        <div>
+          <div class="header-title">SafeScan AI</div>
+          <div class="header-sub">Web Threat Sentinel</div>
+        </div>
+      </div>
+      <div class="guard-pill">
+        <span class="live-pulse"></span>
+        <span>Active</span>
+      </div>
+    </div>
+
+    <!-- Active Tab Inspection Card -->
+    <div class="tab-target-box">
+      <div class="target-label">ACTIVE WEBSITE</div>
+      <div id="target-domain" class="target-domain">Analyzing current tab...</div>
+      <div id="target-url" class="target-url"></div>
+    </div>
+
+    <!-- Verdict Assessment Display -->
+    <div id="verdict-card" class="verdict-box safe">
+      <div class="verdict-top">
+        <div>
+          <span id="verdict-badge" class="v-badge safe">🛡️ SAFE</span>
+          <div id="verdict-category" class="v-category">Legitimate Website</div>
+        </div>
+        <div class="score-badge">
+          <span id="risk-score-num">0.5</span>
+          <span class="score-sub">/10</span>
+        </div>
+      </div>
+      <p id="verdict-summary" class="v-summary">
+        No active phishing signatures, seed phrase harvesters, or unauthorized brand impersonation detected.
+      </p>
+    </div>
+
+    <!-- Threat Indicators Section -->
+    <div class="section-title">DETECTION TELEMETRY</div>
+    <ul id="indicators-list" class="indicators-list">
+      <li class="indicator-item safe">
+        <span>✓</span>
+        <span>Official authorized domain SSL match</span>
+      </li>
+      <li class="indicator-item safe">
+        <span>✓</span>
+        <span>No credential harvesting inputs found</span>
+      </li>
+    </ul>
+
+    <!-- Controls -->
+    <div class="action-footer">
+      <button id="rescan-btn" class="btn-rescan">
+        <span>🔄</span>
+        <span>Re-Scan Page</span>
+      </button>
+      <a href="http://localhost:8080" target="_blank" class="btn-dashboard">
+        <span>🌐</span>
+        <span>Full Dashboard</span>
+      </a>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
