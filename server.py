@@ -162,6 +162,36 @@ def health_check():
     }
 
 
+@app.api_route("/favicon.ico", methods=["GET", "HEAD"])
+def serve_favicon_ico():
+    for p in ["public/favicon.ico", "web/favicon.ico", "favicon.ico"]:
+        fp = os.path.join(os.path.dirname(os.path.abspath(__file__)), p)
+        if os.path.exists(fp):
+            return FileResponse(fp, media_type="image/x-icon")
+    raise HTTPException(status_code=404, detail="Favicon not found")
+
+
+@app.api_route("/favicon.svg", methods=["GET", "HEAD"])
+def serve_favicon_svg():
+    for p in ["public/favicon.svg", "web/favicon.svg", "favicon.svg"]:
+        fp = os.path.join(os.path.dirname(os.path.abspath(__file__)), p)
+        if os.path.exists(fp):
+            return FileResponse(fp, media_type="image/svg+xml")
+    raise HTTPException(status_code=404, detail="Favicon not found")
+
+
+@app.api_route("/favicon.png", methods=["GET", "HEAD"])
+@app.api_route("/favicon-32x32.png", methods=["GET", "HEAD"])
+@app.api_route("/favicon-16x16.png", methods=["GET", "HEAD"])
+@app.api_route("/apple-touch-icon.png", methods=["GET", "HEAD"])
+def serve_favicon_png():
+    for p in ["public/favicon.png", "web/favicon.png", "favicon.png"]:
+        fp = os.path.join(os.path.dirname(os.path.abspath(__file__)), p)
+        if os.path.exists(fp):
+            return FileResponse(fp, media_type="image/png")
+    raise HTTPException(status_code=404, detail="Favicon not found")
+
+
 @app.post("/api/v1/scan")
 def scan_url(request: ScanRequest):
     """
