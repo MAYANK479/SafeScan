@@ -11,7 +11,12 @@
   <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-0.110+-009688?logo=fastapi&logoColor=white" alt="FastAPI"></a>
   <a href="https://developer.chrome.com/docs/extensions/mv3/intro/"><img src="https://img.shields.io/badge/Extension-Manifest_V3-4285F4?logo=googlechrome&logoColor=white" alt="Manifest V3 Extension"></a>
   <a href="https://github.com/MAYANK479/SafeScan/actions"><img src="https://img.shields.io/badge/Tests-Passing_100%25-brightgreen.svg" alt="Tests"></a>
+  <a href="https://safescan-lac.vercel.app"><img src="https://img.shields.io/badge/Live_Demo-safescan--lac.vercel.app-00E5FF?logo=vercel&logoColor=black" alt="Live Demo"></a>
   <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white" alt="Docker"></a>
+</p>
+
+<p align="center">
+  🌐 <strong>Live Production Deployment:</strong> <a href="https://safescan-lac.vercel.app">https://safescan-lac.vercel.app</a>
 </p>
 
 <p align="center">
