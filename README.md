@@ -38,7 +38,6 @@
 - [⚡ Quick Start Guide](#-quick-start-guide)
 - [📡 API & Real-Time Streaming Specification](#-api--real-time-streaming-specification)
 - [🧪 Benchmark Evaluation Suite](#-benchmark-evaluation-suite)
-- [💼 AI/ML Resume & Technical Talking Points](#-aiml-resume--technical-talking-points)
 - [📜 License](#-license)
 
 ---
@@ -234,8 +233,7 @@ Open your Chromium-based browser of choice and navigate to:
 
 ```
 .
-├── SafeScan_AI.ipynb         # 📓 Complete, Interactive Jupyter Notebook (Recruiter-Ready)
-├── RESUME_GUIDE.md           # 💼 STAR Bullet Points, LinkedIn Post & Technical Interview Q&As
+├── SafeScan_AI.ipynb         # 📓 Complete, Interactive Jupyter Notebook & Evaluation Suite
 ├── assets/                   # 🖼️ High-Resolution Architecture Mockups & Extension Previews
 │   ├── dashboard_preview.jpg # Dashboard Mockup
 │   └── extension_preview.jpg # Browser Extension Preview
@@ -376,19 +374,6 @@ Run unit tests via Pytest:
 ```bash
 python3 -m pytest tests/test_pipeline.py -v
 ```
-
----
-
-## 💼 AI/ML Resume & Technical Talking Points
-
-For detailed STAR-format resume bullet points, LinkedIn announcement templates, and 11 technical interview deep-dives, see **[RESUME_GUIDE.md](RESUME_GUIDE.md)**.
-
-### Key AI/ML Skills Demonstrated:
-- **Agentic AI & Orchestration**: Architected a 4-agent sequential pipeline separating deterministic lexical screening from LLM cognitive synthesis.
-- **Mathematical Feature Engineering**: Implemented Shannon character entropy $H(X)$ to classify DGA domain randomness.
-- **Structured LLM Inference**: Prompted Google Gemini with Pydantic JSON schemas, eliminating hallucinations and ensuring type-safe outputs.
-- **Low-Latency Hybrid Systems**: Designed dual-engine fallback allowing sub-15ms inference in offline/disconnected environments.
-- **Full-Stack ML Engineering**: Deployed end-to-end system spanning FastAPI microservices, WebSockets/SSE streaming, and Chrome Manifest V3 client interfaces.
 
 ---
 

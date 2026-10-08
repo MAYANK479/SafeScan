@@ -23,3 +23,6 @@ htmlcov/
 .idea/
 .vscode/
 *.swp
+
+# Personal Career Guide
+RESUME_GUIDE.md
