@@ -47,22 +47,29 @@ async function inspectTabUrl(rawUrl) {
     urlEl.textContent = rawUrl;
   }
 
-  // Attempt live scan against local SafeScan backend
-  try {
-    const response = await fetch('http://localhost:8080/api/v1/scan', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: rawUrl }),
-      signal: AbortSignal.timeout(3500)
-    });
+  // Attempt live scan against local SafeScan backend, fallback to cloud, then client heuristics
+  const endpoints = [
+    'http://127.0.0.1:8080/api/v1/scan',
+    'https://safescan-lac.vercel.app/api/v1/scan'
+  ];
 
-    if (response.ok) {
-      const report = await response.json();
-      renderPopupVerdict(report);
-      return;
+  for (const ep of endpoints) {
+    try {
+      const response = await fetch(ep, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: rawUrl }),
+        signal: AbortSignal.timeout(2800)
+      });
+
+      if (response.ok) {
+        const report = await response.json();
+        renderPopupVerdict(report);
+        return;
+      }
+    } catch (err) {
+      // Try next endpoint
     }
-  } catch (err) {
-    console.log("SafeScan local backend not responding, running client-side heuristics...");
   }
 
   // Client-Side Fast Heuristic Fallback Engine

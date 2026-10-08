@@ -63,7 +63,7 @@
         </span>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
-        <a href="http://localhost:8080" target="_blank" style="background: rgba(0,0,0,0.3); color: #fff; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;">Inspect Details</a>
+        <a href="https://safescan-lac.vercel.app" target="_blank" style="background: rgba(0,0,0,0.3); color: #fff; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;">Inspect Details</a>
         <button id="safescan-dismiss-btn" style="background: transparent; border: none; color: #fff; font-size: 18px; cursor: pointer; padding: 0 5px;">✕</button>
       </div>
     `;
